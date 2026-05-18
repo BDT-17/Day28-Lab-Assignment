@@ -1,0 +1,7 @@
+﻿
+Name                          Length LastWriteTime       
+----                          ------ -------------       
+batch_20260518_192610.parquet   2996 5/18/2026 7:26:10 PM
+
+
+

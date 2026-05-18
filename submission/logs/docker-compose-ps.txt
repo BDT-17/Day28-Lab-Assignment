@@ -1,0 +1,6 @@
+﻿NAME                                 IMAGE                              COMMAND                  SERVICE       CREATED         STATUS         PORTS
+day28-lab-assignment-api-gateway-1   day28-lab-assignment-api-gateway   "uvicorn main:app --…"   api-gateway   7 minutes ago   Up 7 minutes   0.0.0.0:8000->8000/tcp, [::]:8000->8000/tcp
+day28-lab-assignment-kafka-1         confluentinc/cp-kafka:7.5.0        "/etc/confluent/dock…"   kafka         2 hours ago     Up 2 hours     0.0.0.0:9092->9092/tcp, [::]:9092->9092/tcp
+day28-lab-assignment-qdrant-1        qdrant/qdrant:latest               "./entrypoint.sh"        qdrant        2 hours ago     Up 2 hours     0.0.0.0:6333->6333/tcp, [::]:6333->6333/tcp
+day28-lab-assignment-redis-1         redis:7-alpine                     "docker-entrypoint.s…"   redis         2 hours ago     Up 2 hours     0.0.0.0:6379->6379/tcp, [::]:6379->6379/tcp
+day28-lab-assignment-zookeeper-1     confluentinc/cp-zookeeper:7.5.0    "/etc/confluent/dock…"   zookeeper     2 hours ago     Up 2 hours     0.0.0.0:2181->2181/tcp, [::]:2181->2181/tcp

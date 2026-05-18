@@ -1,13 +1,14 @@
 # api-gateway/main.py
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, HTTPException, Request
 from prometheus_fastapi_instrumentator import Instrumentator
-import httpx, os, time, langsmith
+import httpx, os, time
 
 app = FastAPI(title="AI Platform API Gateway")
 Instrumentator().instrument(app).expose(app)  # Integration 9: Prometheus
 
 VLLM_URL = os.environ["VLLM_URL"]
 QDRANT_URL = os.environ.get("QDRANT_URL", "http://qdrant:6333")
+NGROK_HEADERS = {"ngrok-skip-browser-warning": "true"}
 
 @app.post("/api/v1/chat")
 async def chat(request: Request):
@@ -21,6 +22,7 @@ async def chat(request: Request):
             "vector": body.get("embedding", [0.0] * 384),
             "limit": 3
         })
+        search_resp.raise_for_status()
         context = search_resp.json().get("result", [])
 
     # 2. LLM inference
@@ -29,10 +31,14 @@ async def chat(request: Request):
         llm_resp = await client.post(f"{VLLM_URL}/v1/chat/completions", json={
             "model": "Qwen/Qwen2.5-7B-Instruct-GPTQ-Int4",
             "messages": [{"role": "user", "content": prompt}]
-        })
+        }, headers=NGROK_HEADERS)
 
     latency = (time.time() - start) * 1000
     result = llm_resp.json()
+    if llm_resp.status_code >= 400:
+        raise HTTPException(status_code=502, detail=result)
+    if "choices" not in result:
+        raise HTTPException(status_code=502, detail={"upstream_response": result})
 
     return {
         "answer": result["choices"][0]["message"]["content"],
